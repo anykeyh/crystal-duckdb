@@ -131,21 +131,23 @@ An Appender always appends to a single table in the database.
 ```crystal
 require "duckdb"
 
-records = [
-  {name: "Alice", age: 20, is_active: true},
-  {name: "Bob", age: 30, is_active: false}
-  {name: "Charles", age: 25, is_active: nil}
+record Contact, name : String?, age : Int32?, is_active : Bool?
+
+contacts = [
+  Contact.new("Alice", 20, true),
+  Contact.new("Bob", 30, false),
+  Contact.new("Charles", 25, nil)
 ]
 
 DB.connect DuckDB::IN_MEMORY do |cnn|
   cnn.exec "create table contacts (name varchar, age integer, is_active boolean)"
 
   cnn.appender("contacts") do |appender|
-    records.each do |record|
+    contacts.each do |contact|
       appender.row do |row|
-        row << record.name
-        row << record.age
-        row << record.is_active
+        row << contact.name
+        row << contact.age
+        row << contact.is_active
       end
     end
   end 
